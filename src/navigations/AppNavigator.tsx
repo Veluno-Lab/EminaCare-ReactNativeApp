@@ -6,6 +6,7 @@ import HomeScreen from '../screens/HomeScreen';
 import SplashScreen from '../screens/SplashScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import CaregiverDashboardScreen from '../screens/CaregiverDashboardScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export default function AppNavigator() {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="CaregiverDashboardScreen" component={CaregiverDashboardScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>

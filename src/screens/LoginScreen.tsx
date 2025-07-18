@@ -1,13 +1,38 @@
 import React, { useState } from 'react';
 import { Center, VStack, Input, Button, Text, Image, Box } from 'native-base';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Alert, TextInput } from 'react-native';
+import axios from 'axios';
 
 export default function LoginScreen({ navigation }: any) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleLogin = () => {
-        console.log('Login with', email, password);
+    const handleLogin = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.post('http://10.0.2.2:3000/auth/login', {
+                email,
+                password
+            });
+
+            const { token, user } = response.data;
+            console.log(response.data)
+
+            console.log('User logged in:', user);
+
+            if (user.role === 'caregiver') {
+                navigation.replace('CaregiverDashboardScreen');
+            } else {
+                // Navigate sang màn phù hợp khác (mommy chẳng hạn)
+                navigation.replace('MommyDashboardScreen'); 
+            }
+        } catch (error: any) {
+            console.error('Login failed', error);
+            Alert.alert('Error', 'Login failed: ' + (error.response?.data?.message || error.message));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -30,25 +55,24 @@ export default function LoginScreen({ navigation }: any) {
             </Box>
 
             <VStack space={4} width="100%">
-                <Input
+                <TextInput
+                    style={styles.input}
                     placeholder="Email"
                     value={email}
                     onChangeText={setEmail}
-                    variant="rounded"
-                    bg="white"
-                    _focus={{ borderWidth: 1 }}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
                 />
-                <Input
+                <TextInput
+                    style={styles.input}
                     placeholder="Password"
                     value={password}
                     onChangeText={setPassword}
-                    type="password"
-                    variant="rounded"
-                    bg="white"
-                    _focus={{ borderWidth: 1 }}
+                    secureTextEntry
                 />
                 <Button
                     onPress={handleLogin}
+                    isLoading={loading}
                     borderRadius="full"
                     bg="#ff6b81"
                     _text={{
@@ -83,9 +107,15 @@ const styles = StyleSheet.create({
     },
     brandName: {
         color: '#ff6b81',
-        textShadowColor: 'rgba(0, 0, 0, 0.2)',
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 2,
-        letterSpacing: 2,
+    },
+    input: {
+        width: '100%',
+        height: 50,
+        backgroundColor: 'white',
+        borderRadius: 25,
+        paddingHorizontal: 15,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#ddd',
     },
 });
